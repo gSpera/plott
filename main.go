@@ -1,5 +1,4 @@
 package main
-
 import (
 	"fmt"
 	"image/gif"
@@ -7,33 +6,24 @@ import (
 	"os"
 	"strings"
 )
-
 const (
-	epsilonScale      = 1.2
 	border            = true
-	xEpsilonScale     = 0.3
-	yEpsilonScale     = 0.3
 	topBorderWidth    = 1
 	bottomBorderWidth = 1
 	leftBorderWidth   = 1
 	rightBorderWidth  = 1
 )
-
 func f(x float64) (y float64) {
 	return math.Sin(x)
 }
-
 func main() {
 	v := View{
 		Graph: Graph{f},
-
-		Min: Point{X: -math.Pi, Y: -1.5},
-		Max: Point{X: +2 * math.Pi, Y: +1.5},
-
+		Min: Point{X: -1, Y: -1.5},
+		Max: Point{X: +2, Y: +1.5},
 		Width:  40,
 		Height: 20,
 	}
-
 	f, err := os.Create("graph.gif")
 	if err != nil {
 		panic(err)
@@ -41,7 +31,6 @@ func main() {
 	if err := gif.Encode(f, v, nil); err != nil {
 		panic(err)
 	}
-
 	for y := 0; y < v.Height; y++ {
 		if y < topBorderWidth || y > v.Height-bottomBorderWidth-1 {
 			fmt.Print("+" + strings.Repeat("-", v.Width-2) + "+" + "\n")
