@@ -1,16 +1,44 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"math"
+	"os"
+
+	"github.com/gSpera/eval"
 )
 
 type Point struct {
 	X float64
 	Y float64
 }
+
+func (p *Point) Set(v string) error {
+	_, err := fmt.Sscanf(v, "(%f; %f)", &p.X, &p.Y)
+	return err
+}
+
+func (p *Point) String() string {
+	return fmt.Sprintf("(%.2f; %.2f)", p.X, p.Y)
+}
+
 type Function func(x float64) (y float64)
+
+func FunctionEvaluator(fn string) Function {
+	e := eval.New()
+	return func(x float64) float64 {
+		e.SetVar("x", x)
+		v, err := e.Eval(fn)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error while executing function: %v", err)
+			os.Exit(2)
+		}
+
+		return v
+	}
+}
 
 //Graph rapresent a math graph
 type Graph struct {
@@ -50,7 +78,7 @@ func (v View) AtRune(x, y int) rune {
 	yf := -mapValue(y, 0, v.Height, v.Min.Y, v.Max.Y)
 	xepsilon := (mapValue(1, 0, v.Width, v.Min.X, v.Max.X) - mapValue(0, 0, v.Width, v.Min.X, v.Max.X)) * 0.5
 	yepsilon := (mapValue(1, 0, v.Height, v.Min.Y, v.Max.Y) - mapValue(0, 0, v.Height, v.Min.Y, v.Max.X)) * 0.5
-	crossed := pass(f, xf, yf, yepsilon)
+	crossed := pass(v.Graph.fn, xf, yf, yepsilon)
 	if crossed {
 		return v.Gfx.Dot
 	}
