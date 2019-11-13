@@ -13,8 +13,8 @@ const (
 
 func main() {
 	v := View{
-		Min: Point{X: -5, Y: -5},
-		Max: Point{X: +5, Y: +5},
+		Min: Point{X: -5, Y: +5},
+		Max: Point{X: +5, Y: -5},
 	}
 
 	border := flag.Bool("border", true, "enable border, the border will not be added to the width and the height")
@@ -32,7 +32,7 @@ func main() {
 	case "ascii":
 		v.Gfx = ASCIIRuneSet
 	default:
-		fmt.Fprintf(os.Stderr, "Unsupported runeset: %q", *runeset)
+		fmt.Fprintf(os.Stderr, "Unsupported runeset: %q\n", *runeset)
 		os.Exit(1)
 	}
 

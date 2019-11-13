@@ -32,7 +32,7 @@ func FunctionEvaluator(fn string) Function {
 		e.SetVar("x", x)
 		v, err := e.Eval(fn)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error while executing function: %v", err)
+			fmt.Fprintf(os.Stderr, "error while executing function: %v\n", err)
 			os.Exit(2)
 		}
 
@@ -73,17 +73,19 @@ func (v View) At(x, y int) color.Color {
 	}
 	panic("Unkown rune")
 }
+
 func (v View) AtRune(x, y int) rune {
-	xf := +mapValue(x, 0, v.Width, v.Min.X, v.Max.X)
-	yf := -mapValue(y, 0, v.Height, v.Min.Y, v.Max.Y)
-	xepsilon := (mapValue(1, 0, v.Width, v.Min.X, v.Max.X) - mapValue(0, 0, v.Width, v.Min.X, v.Max.X)) * 0.5
-	yepsilon := (mapValue(1, 0, v.Height, v.Min.Y, v.Max.Y) - mapValue(0, 0, v.Height, v.Min.Y, v.Max.X)) * 0.5
+	xf := mapValue(x, 0, v.Width, v.Min.X, v.Max.X)
+	yf := mapValue(y, 0, v.Height, v.Min.Y, v.Max.Y)
+	xepsilon := math.Abs(mapValue(1, 0, v.Width, v.Min.X, v.Max.X)-mapValue(0, 0, v.Width, v.Min.X, v.Max.X)) * 0.5
+	yepsilon := math.Abs(mapValue(1, 0, v.Height, v.Min.Y, v.Max.Y)-mapValue(0, 0, v.Height, v.Min.Y, v.Max.X)) * 0.5
 	crossed := pass(v.Graph.fn, xf, yf, yepsilon)
 	if crossed {
 		return v.Gfx.Dot
 	}
 	switch {
 	case equal(xf, 0, xepsilon) && equal(yf, 0, yepsilon):
+		fmt.Printf("Origin")
 		return v.Gfx.Origin
 	case equal(xf, 0, xepsilon):
 		return v.Gfx.YAxis
