@@ -49,15 +49,10 @@ func FunctionEvaluator(fn string) (Function, error) {
 	}, nil
 }
 
-//Graph rapresent a math graph
-type Graph struct {
-	fn Function
-}
-
 //View is a view of a graph
 type View struct {
-	Graph Graph
-	Gfx   RuneSet
+	Function Function
+	Gfx      RuneSet
 
 	//Min is the minimum point, it is indicated by the Top-Left Point
 	Min Point
@@ -88,7 +83,7 @@ func (v View) AtRune(x, y int) rune {
 	yf := mapValue(y, 0, v.Height, v.Min.Y, v.Max.Y)
 	xepsilon := math.Abs(mapValue(1, 0, v.Width, v.Min.X, v.Max.X)-mapValue(0, 0, v.Width, v.Min.X, v.Max.X)) * 0.5
 	yepsilon := math.Abs(mapValue(1, 0, v.Height, v.Min.Y, v.Max.Y)-mapValue(0, 0, v.Height, v.Min.Y, v.Max.X)) * 0.5
-	crossed := pass(v.Graph.fn, xf, yf, yepsilon)
+	crossed := pass(v.Function, xf, yf, yepsilon)
 	if crossed {
 		return v.Gfx.Dot
 	}

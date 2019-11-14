@@ -43,7 +43,7 @@ func main() {
 	}
 
 	var err error
-	v.Graph.fn, err = FunctionEvaluator(*fn)
+	v.Function, err = FunctionEvaluator(*fn)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Cannot evaluate function %q: %v", *fn, err)
 		os.Exit(1)
