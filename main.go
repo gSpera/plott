@@ -42,7 +42,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	v.Graph.fn = FunctionEvaluator(*fn)
+	var err error
+	v.Graph.fn, err = FunctionEvaluator(*fn)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Cannot evaluate function %q: %v", *fn, err)
+		os.Exit(1)
+	}
 
 	for y := 0; y < v.Height; y++ {
 		if *border && y < 1 {

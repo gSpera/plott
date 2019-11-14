@@ -5,9 +5,8 @@ import (
 	"image"
 	"image/color"
 	"math"
-	"os"
 
-	"github.com/gSpera/eval"
+	"github.com/gSpera/meval"
 )
 
 type Point struct {
@@ -16,7 +15,7 @@ type Point struct {
 }
 
 func (p *Point) Set(v string) error {
-	_, err := fmt.Sscanf(v, "(%f; %f)", &p.X, &p.Y)
+	_, err := fmt.Sscanf(v, "(%f;%f)", &p.X, &p.Y)
 	return err
 }
 
@@ -26,18 +25,28 @@ func (p *Point) String() string {
 
 type Function func(x float64) (y float64)
 
-func FunctionEvaluator(fn string) Function {
-	e := eval.New()
+//FunctionEvaluator uses a math evaluator for parsing and evaluating a function
+//if there is an error in the function it will be reported.
+//this function can panic if the evaluator returns an unexpected error during execution
+func FunctionEvaluator(fn string) (Function, error) {
+	e := meval.New()
+	e.SetVar("x", 0)
+	//Test if function is valid
+	if _, err := e.Eval(fn); err != nil {
+		return nil, err
+	}
+
 	return func(x float64) float64 {
 		e.SetVar("x", x)
 		v, err := e.Eval(fn)
+
+		//Eval method should error may not depend on the value of x
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error while executing function: %v\n", err)
-			os.Exit(2)
+			panic(err)
 		}
 
 		return v
-	}
+	}, nil
 }
 
 //Graph rapresent a math graph
@@ -85,7 +94,6 @@ func (v View) AtRune(x, y int) rune {
 	}
 	switch {
 	case equal(xf, 0, xepsilon) && equal(yf, 0, yepsilon):
-		fmt.Printf("Origin")
 		return v.Gfx.Origin
 	case equal(xf, 0, xepsilon):
 		return v.Gfx.YAxis
