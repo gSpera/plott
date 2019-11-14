@@ -110,6 +110,8 @@ func TestViewAt(t *testing.T) {
 		Function: f,
 		Width:    10,
 		Height:   10,
+		Border:   true,
+		Axis:     true,
 		Min:      Point{X: -5, Y: 5},
 		Max:      Point{X: 5, Y: -5},
 		Gfx:      ASCIIRuneSet,
@@ -124,7 +126,7 @@ func TestViewAt(t *testing.T) {
 	}{
 		{
 			"top-left",
-			0, 0,
+			1, 1,
 			v.Gfx.Empty,
 			color.White,
 		},
@@ -136,13 +138,13 @@ func TestViewAt(t *testing.T) {
 		},
 		{
 			"x-axis",
-			0, 5,
+			5, 0,
 			v.Gfx.XAxis,
 			color.Black,
 		},
 		{
 			"y-axis",
-			5, 0,
+			0, 5,
 			v.Gfx.YAxis,
 			color.Black,
 		},

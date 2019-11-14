@@ -7,6 +7,8 @@ type RuneSet struct {
 
 	XAxis   rune
 	YAxis   rune
+	XArrow  rune
+	YArrow  rune
 	Origin  rune
 	HBorder rune
 	VBorder rune
@@ -23,6 +25,8 @@ var ASCIIRuneSet = RuneSet{
 
 	XAxis:   '-',
 	YAxis:   '|',
+	XArrow:  '>',
+	YArrow:  '^',
 	Origin:  '+',
 	HBorder: '-',
 	VBorder: '|',
@@ -39,6 +43,8 @@ var UnicodeRuneSet = RuneSet{
 
 	XAxis:   '─',
 	YAxis:   '│',
+	XArrow:  '►',
+	YArrow:  '▲',
 	Origin:  '┼',
 	HBorder: '─',
 	VBorder: '│',

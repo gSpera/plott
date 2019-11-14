@@ -54,6 +54,9 @@ type View struct {
 	Function Function
 	Gfx      RuneSet
 
+	Border bool
+	Axis   bool
+
 	//Min is the minimum point, it is indicated by the Top-Left Point
 	Min Point
 	//Max is the maximum point, it is indicated by the Bottom-Right Point
@@ -70,32 +73,116 @@ func (v View) ColorModel() color.Model {
 }
 func (v View) At(x, y int) color.Color {
 	switch v.AtRune(x, y) {
-	case v.Gfx.Origin, v.Gfx.YAxis, v.Gfx.XAxis, v.Gfx.Dot:
-		return color.Black
 	case v.Gfx.Empty:
 		return color.White
+	default:
+		return color.Black
 	}
-	panic("Unkown rune")
 }
 
+//AtRune returns the rune at the given position, it applies the border and the axis
 func (v View) AtRune(x, y int) rune {
+	//Order is border, dot, axis
+	//The border is showed above anything
+	if ch, ok := v.border(x, y); v.Border && ok {
+		return ch
+	}
+	if ch, ok := v.atRune(x, y); ok {
+		return ch
+	}
+	if ch, ok := v.axis(x, y); v.Axis && ok {
+		return ch
+	}
+
+	return v.Gfx.Empty
+}
+
+//atRune returns the rune at the given position without appling the wrappers
+func (v View) atRune(x, y int) (rune, bool) {
+	xf := mapValue(x, 0, v.Width, v.Min.X, v.Max.X)
+	yf := mapValue(y, 0, v.Height, v.Min.Y, v.Max.Y)
+	yepsilon := math.Abs(mapValue(1, 0, v.Height, v.Min.Y, v.Max.Y)-mapValue(0, 0, v.Height, v.Min.Y, v.Max.X)) * 0.5
+	crossed := pass(v.Function, xf, yf, yepsilon)
+
+	if crossed {
+		return v.Gfx.Dot, true
+	}
+
+	return v.Gfx.Empty, false
+}
+
+func (v View) border(x, y int) (rune, bool) {
+	//Top Border
+	if y == 0 {
+		switch x {
+		case 0:
+			return v.Gfx.TopLeftBorder, true
+		case v.Width - 1:
+			return v.Gfx.TopRightBorder, true
+		default:
+			return v.Gfx.HBorder, true
+		}
+	}
+
+	//Bottom Border
+	if y == v.Height-1 {
+		switch x {
+		case 0:
+			return v.Gfx.BottomLeftBorder, true
+		case v.Width - 1:
+			return v.Gfx.BottomRightBorder, true
+		default:
+			return v.Gfx.HBorder, true
+		}
+	}
+
+	//Vertical Border
+	if x == 0 || x == v.Width-1 {
+		return v.Gfx.VBorder, true
+	}
+
+	return 0, false
+}
+
+func (v View) axis(x, y int) (rune, bool) {
 	xf := mapValue(x, 0, v.Width, v.Min.X, v.Max.X)
 	yf := mapValue(y, 0, v.Height, v.Min.Y, v.Max.Y)
 	xepsilon := math.Abs(mapValue(1, 0, v.Width, v.Min.X, v.Max.X)-mapValue(0, 0, v.Width, v.Min.X, v.Max.X)) * 0.5
 	yepsilon := math.Abs(mapValue(1, 0, v.Height, v.Min.Y, v.Max.Y)-mapValue(0, 0, v.Height, v.Min.Y, v.Max.X)) * 0.5
-	crossed := pass(v.Function, xf, yf, yepsilon)
-	if crossed {
-		return v.Gfx.Dot
+
+	//Calcualte the real width
+	width := v.Width - 1
+	if v.Border {
+		width--
 	}
+	top := 0
+	if v.Border {
+		top++
+	}
+
 	switch {
+	//Origin
 	case equal(xf, 0, xepsilon) && equal(yf, 0, yepsilon):
-		return v.Gfx.Origin
+		return v.Gfx.Origin, true
+
+	//X Axis Arrow
+	case equal(yf, 0, yepsilon) && x == width:
+		return v.Gfx.XArrow, true
+
+	//Y Axis Arrow
+	case equal(xf, 0, xepsilon) && y == top:
+		return v.Gfx.YArrow, true
+
+	//Y Axis
 	case equal(xf, 0, xepsilon):
-		return v.Gfx.YAxis
+		return v.Gfx.YAxis, true
+
+	//X Axis
 	case equal(yf, 0, yepsilon):
-		return v.Gfx.XAxis
+		return v.Gfx.XAxis, true
 	}
-	return v.Gfx.Empty
+
+	return 0, false
 }
 
 func mapValue(v, srcMin, srcMax int, outMin, outMax float64) float64 {
