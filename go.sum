@@ -1,2 +1,4 @@
-github.com/gSpera/meval v0.0.0-20191113164741-1ae55d8b1abc h1:rHfvw3GfXsAJEVFYO+mFu0W0cfosVkwMejjwatN0DGU=
-github.com/gSpera/meval v0.0.0-20191113164741-1ae55d8b1abc/go.mod h1:ZhwdYR3QhbQHmvTI1a2SkImQ2RbPySUTYL6U6B5IsQQ=
+github.com/gSpera/meval v0.1.0 h1:yQbAy6oZVfvIU7awHDBlImESLZ+qI+k9UxcjEzNKSX0=
+github.com/gSpera/meval v0.1.0/go.mod h1:ZhwdYR3QhbQHmvTI1a2SkImQ2RbPySUTYL6U6B5IsQQ=
+github.com/gSpera/meval v0.1.1 h1:qyi6AqghpE3i7EQruznifhN0n4Ti2kDjSS8eurUxQsk=
+github.com/gSpera/meval v0.1.1/go.mod h1:ZhwdYR3QhbQHmvTI1a2SkImQ2RbPySUTYL6U6B5IsQQ=
